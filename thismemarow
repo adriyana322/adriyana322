@@ -1,0 +1,54 @@
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+local savedPosition = nil
+
+local function savePosition()
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        savedPosition = player.Character.HumanoidRootPart.Position
+        game.StarterGui:SetCore("SendNotification", {Title="Position Saved", Text="Your position has been saved.", Duration=5})
+    end
+end
+
+local function teleportToSavedPosition()
+    local player = game.Players.LocalPlayer
+    if savedPosition and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        player.Character.HumanoidRootPart.CFrame = CFrame.new(savedPosition)
+        game.StarterGui:SetCore("SendNotification", {Title="Teleported", Text="You have been teleported!", Duration=5})
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="Error", Text="No position saved yet!", Duration=5})
+    end
+end
+
+-- Example: Assigning hotkeys
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.P then -- Save position with "P"
+        savePosition()
+    elseif input.KeyCode == Enum.KeyCode.T then -- Teleport with "T"
+        teleportToSavedPosition()
+    end
+end)
+
+local UIS = game:GetService("UserInputService")
+
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+
+
+function GetCharacter()
+   return game.Players.LocalPlayer.Character
+end
+
+function Teleport(pos)
+   local Char = GetCharacter()
+   if Char then
+       Char:MoveTo(pos)
+   end
+end
+
+
+UIS.InputBegan:Connect(function(input)
+   if input.UserInputType == Enum.UserInputType.MouseButton1 and UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+       Teleport(Mouse.Hit.p)
+   end
+end)
